@@ -3,18 +3,18 @@
 
 
 <script>
-    var markers = JSON.parse('<%= escape_javascript(@shopmarker)  %>')
+    var markers = JSON.parse('<%= escape_javascript(@shopmarker) %>')
+
     
     window.onload = function () {
         LoadMap();
     }
     function LoadMap() {
-        //click icon show name
         var infoWindow = new google.maps.InfoWindow();
         var latlngbounds = new google.maps.LatLngBounds();
         var map = new google.maps.Map(document.getElementById("map"), {
                     center: new google.maps.LatLng(markers[0].lat, markers[0].lng),
-                    zoom: 10,
+                    zoomControl: false
                 });
  
         for (var i = 0; i < markers.length; i++) {
@@ -22,7 +22,7 @@
             var shopLatLng = new google.maps.LatLng(data.latitude, data.longitude);
             var image = {
                 url: data.category + ".png", 
-                scaledSize: new google.maps.Size(20, 25), 
+                scaledSize: new google.maps.Size(30, 30), 
             }
             var marker = new google.maps.Marker({
                 position: shopLatLng,
@@ -35,16 +35,18 @@
                     infoWindow.open(map, marker);
                 });
             })(marker, data);
-            google.maps.event.addListener(map, 'zoom_changed', function() {
-            var zoom = map.getZoom();
-            // iterate over markers and call setVisible
-            for (i = 0; i < locations.length; i++) {
-                    markers[i].setVisible(zoom < 15);
-                }
-            });
+           
             
             latlngbounds.extend(marker.position);
         }
+         google.maps.event.addListener(map, 'zoom_changed', function() {
+            var zoom = map.getZoom();
+            for (i = 0; i < markers.length; i++) {
+                    markers[i].setVisible(zoom <= 15);
+                }
+            });
+       
+       
         var bounds = new google.maps.LatLngBounds();
         
         map.setCenter(latlngbounds.getCenter());
