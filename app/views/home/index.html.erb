@@ -4,50 +4,53 @@
 
 
 <script>
-    let map;
-
-    function initMap() {
-        map = new google.maps.Map(document.getElementById("map"), {
-            center: { lat: 13.7563, lng: 100.5018 },
-            zoom: 12,
-        });
-       
-
-
-        const Barbershopimage = {
-                url: "barber-shop.png", // url
-                scaledSize: new google.maps.Size(40, 40), // scaled size
+    var markers = JSON.parse('<%= escape_javascript(@shopmarker)  %>')
+    
+    window.onload = function () {
+        LoadMap();
+    }
+    function LoadMap() {
+        var infoWindow = new google.maps.InfoWindow();
+        var latlngbounds = new google.maps.LatLngBounds();
+        var map = new google.maps.Map(document.getElementById("map"), {
+                    center: { lat: 13.7563, lng: 100.5018 },
+                    zoom: 8,
+                });
+ 
+        for (var i = 0; i < markers.length; i++) {
+            var data = markers[i]
+            var myLatlng = new google.maps.LatLng(data.latitude, data.longitude);
+            var image = {
+                url: data.category + ".png", // url
+                scaledSize: new google.maps.Size(25, 25), // scaled size
                 origin: new google.maps.Point(0,0), // origin
                 anchor: new google.maps.Point(0, 0) // anchor
             }
-
-        var markerBarbershop = new google.maps.Marker({
-            position: { lat: 13.760468, lng: 100.497112 },
-            map: map,
-            icon: Barbershopimage,
-        })
-
-
-        var contentString =
-                            '<div id="content">' +
-                            '<div id="siteNotice">' +
-                            "</div>" +
-                            '<p id="firstHeading" class="firstHeading">Barbershop</p>' +
-                            "</div>";
-
-        var infowindow = new google.maps.InfoWindow({
-            content: contentString,
-        });
-
-        markerBarbershop.addListener("click", () => {
-            infowindow.open({
-            anchor: markerBarbershop,
-            map,
+            var marker = new google.maps.Marker({
+                position: myLatlng,
+                map: map,
+                icon: image,
             });
-        });
+            (function (marker, data) {
+
+                $(document).ready(function() {
+                    $("#dialog").dialog();
+                });
+
+                google.maps.event.addListener(marker, "click", function (e) {
+                    infoWindow.setContent("<div id=content> <div id=siteNotice> </div> <p id=firstHeading class=firstHeading>" + data.name + "</p></div>");
+                    infoWindow.open(map, marker);
+                });
+            })(marker, data);
+            latlngbounds.extend(marker.position);
+        }
+        var bounds = new google.maps.LatLngBounds();
+        map.setCenter(latlngbounds.getCenter());
+        map.fitBounds(latlngbounds);
     }
 
-window.initMap = initMap;
+
+
 
 
 </script>

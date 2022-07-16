@@ -1,0 +1,2 @@
+class ShopMarker < ApplicationRecord
+end
