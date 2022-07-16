@@ -13,7 +13,7 @@
     <%= yield %>
   </body>
   <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-Xv6AwInjK_Iwu0g9GnEXr6xRKBiDLFw&callback=initMap&v=weekly"
+      src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.google_map[:google_map_api]%>&callback=initMap&v=weekly"
       defer
     ></script>
 </html>
